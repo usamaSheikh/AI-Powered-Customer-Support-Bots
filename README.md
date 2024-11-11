@@ -1,6 +1,9 @@
 # AI-Powered-Customer-Support-Bots
 Bots that can handle common queries, resolve issues, and escalate complex cases to human agents. These are widely used in sectors like ecommerce, SaaS, healthcare, and telecom.
 
+![Screenshot_2](https://github.com/user-attachments/assets/861bc0e5-d06a-4e76-a8ca-e1b7dd1f15dc)
+
+
 
 1. Run app.py in F:\ChatBot\An-AI-Chatbot-in-Python-and-Flask-main
 
