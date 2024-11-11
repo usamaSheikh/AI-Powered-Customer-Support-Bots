@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f8ff;
+            font-family: Arial, sans-serif;
+        }
+
+        .chat-container {
+            background-color: #fff;
+            width: 350px;
+            height: 500px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background-color: #0078d7;
+            padding: 15px;
+            color: #fff;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #chatbox {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #e9f5ff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chatbox p {
+            margin: 8px 0;
+            padding: 10px 15px;
+            border-radius: 20px;
+            max-width: 70%;
+            font-size: 15px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-msg {
+            align-self: flex-end;
+            background-color: #0078d7;
+            color: #fff;
+            text-align: right;
+        }
+
+        .bot-msg {
+            align-self: flex-start;
+            background-color: #f1f1f1;
+            color: #333;
+        }
+
+        .input-area {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+
+        #msg {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            font-size: 16px;
+            border-radius: 0;
+            outline: none;
+        }
+
+        #msg::placeholder {
+            color: #888;
+        }
+
+        .send-button {
+            background-color: #0078d7;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .send-button:hover {
+            background-color: #005bb5;
+        }
+
+        .chat-footer {
+            padding: 8px;
+            background-color: #f8f8f8;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            Chat with Your Friendly Bot
+        </div>
+
+        <div id="chatbox">
+            <p class="bot-msg">Hello! I'm here to chat with you 😊</p>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="msg" placeholder="Type your message..." autocomplete="off" onkeypress="handleKeyPress(event)">
+            <button class="send-button" onclick="sendMessage()">Send</button>
+        </div>
+
+        <div class="chat-footer">
+            Powered by AI • Have a fun conversation!
+        </div>
+    </div>
+
+    <script>
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const msgInput = document.getElementById('msg');
+            const msg = msgInput.value.trim();
+            if (!msg) return;
+
+            const chatbox = document.getElementById('chatbox');
+            displayMessage("You: " + msg, "user-msg");
+
+            fetch("http://127.0.0.1:5000/get", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: "msg=" + encodeURIComponent(msg),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const botResponse = data.response || "I'm having trouble understanding you.";
+                displayMessage("Bot: " + botResponse, "bot-msg");
+                chatbox.scrollTop = chatbox.scrollHeight;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                displayMessage("Bot: I'm having trouble connecting to the server.", "bot-msg");
+            });
+
+            msgInput.value = '';
+        }
+
+        function displayMessage(text, className) {
+            const chatbox = document.getElementById('chatbox');
+            const msgElement = document.createElement('p');
+            msgElement.className = className;
+            msgElement.textContent = text;
+            chatbox.appendChild(msgElement);
+        }
+    </script>
+
+</body>
+</html>
